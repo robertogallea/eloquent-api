@@ -1,0 +1,43 @@
+{
+    "name": "robertogallea/eloquent-api",
+    "description": "Eloquent models backed by Rest API",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roberto Gallea",
+            "email": "write@robertogallea.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^7.3",
+        "illuminate/support": "^6.0|^7.0",
+        "calebporzio/sushi": "^1.1",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^6.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~8.5",
+        "mockery/mockery": "^1.1",
+        "orchestra/testbench": "~5",
+        "sempro/phpunit-pretty-print": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "robertogallea\\EloquentApi\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/",
+            "App\\": "vendor/orchestra/testbench-core/laravel/app"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": "robertogallea\\EloquentApi\\EloquentApiProvider"
+        }
+    }
+}

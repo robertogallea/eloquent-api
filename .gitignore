@@ -1,0 +1,6 @@
+/tests/cache
+/tests/Models/MyApiModel.php
+.idea
+vendor
+composer.lock
+.phpunit.result.cache

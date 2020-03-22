@@ -1,0 +1,12 @@
+<?php
+
+namespace API_MODEL_NAMESPACE;
+
+use robertogallea\EloquentApi\ApiModel;
+
+class API_MODEL_NAME extends ApiModel
+{
+    protected $endpoint = 'ENDPOINT_URL';
+    protected $dataField = DATA_FIELD;
+    protected $nextPageField = NEXT_PAGE_FIELD;
+}
