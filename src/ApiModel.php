@@ -3,9 +3,9 @@
 namespace robertogallea\EloquentApi;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
+use robertogallea\EloquentApi\Reader\JsonReader;
 use Sushi\Sushi;
 
 class ApiModel extends Model
@@ -92,66 +92,10 @@ class ApiModel extends Model
     }
     
     /**
-     * @param $endpoint
-     * @param array $options
      * @return LazyCollection
      */
     public function loadFromApi()
     {
-        return LazyCollection::make(
-            function () {
-                $count = 0;
-                
-                $urlData = parse_url($this->endpoint);
-                
-                $baseUri = $urlData['scheme'] . '://' . $urlData['host'] . (isset($urlData['port']) ? ':' . $urlData['port'] : '') . ($urlData['path'] ?? '');
-                
-                $nextPage = $baseUri;
-                while (!is_null($nextPage)) {
-                    list($data, $nextPage) = $this->getNextPage($nextPage);
-                    $data = $this->offsetKeys($data, $count);
-                    
-                    $count += sizeof($data);
-                    
-                    yield from $data;
-                }
-            }
-        );
-    }
-    
-    private function getNextPage(string $nextPage): array
-    {
-        $response = Http::get($nextPage);
-        
-        $data = $response->json();
-        
-        $nextPage = $data[$this->getNextPageField()] ?? null;
-        
-        if (!$this->getDataField()) {
-            return array($data, $nextPage);
-        }
-        
-        return array($data[$this->dataField], $nextPage);
-    }
-    
-    private function offsetKeys(array $data, int $count)
-    {
-        $newData = [];
-        
-        foreach ($data as $key => $value) {
-            $newData[$key + $count] = $value;
-        }
-        
-        return $newData;
-    }
-    
-    private function getNextPageField()
-    {
-        return $this->nextPageField ?? null;
-    }
-    
-    private function getDataField()
-    {
-        return $this->dataField ?? null;
+        return JsonReader::read($this->endpoint, $this->nextPageField, $this->dataField);
     }
 }
