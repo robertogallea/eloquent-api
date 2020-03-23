@@ -35,7 +35,7 @@ class ApiModel extends Model
          * Determine which attributes should be casted to arrays
          */
         static::retrieved(
-            function ($model) {
+            function (Model $model) {
                 foreach ($model->getAttributes() as $key => $attribute) {
                     if (static::shouldCastToArray($model, $key, $attribute)) {
                         $model->mergeCasts([$key => 'array']);
@@ -51,7 +51,7 @@ class ApiModel extends Model
      * @param $attribute
      * @return bool
      */
-    private static function shouldCastToArray($model, $key, $attribute): bool
+    private static function shouldCastToArray(Model $model, $key, $attribute): bool
     {
         return !array_key_exists($key, $model->getCasts()) &&
             is_array(json_decode($attribute, true));
