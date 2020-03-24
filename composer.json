@@ -13,7 +13,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.3",
-        "illuminate/support": "^6.0|^7.0",
+        "illuminate/support": "^7.0",
         "calebporzio/sushi": "^1.1",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^6.5"
