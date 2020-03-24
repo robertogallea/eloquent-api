@@ -1,22 +1,39 @@
-name: PHP Composer
+name: CI
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
 
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.3'
+        extensions: mbstring, intl, sqlite
+        ini-values: post_max_size=256M, short_open_tag=On
+        coverage: xdebug    
+        tools: php-cs-fixer, phpunit
+     
     - name: Validate composer.json and composer.lock
       run: composer validate
 
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+          
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
