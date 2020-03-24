@@ -42,6 +42,7 @@
     },
     "scripts": {
         "test": [
+            "mkdir tests/cache",
             "vendor/bin/phpunit --testdox"
         ]
     }
