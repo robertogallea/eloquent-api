@@ -39,5 +39,10 @@
         "laravel": {
             "providers": "robertogallea\\EloquentApi\\EloquentApiProvider"
         }
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/phpunit --testdox"
+        ]
     }
 }
