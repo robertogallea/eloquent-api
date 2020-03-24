@@ -4,12 +4,26 @@ declare(strict_types=1);
 
 namespace robertogallea\EloquentApi\Reader;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\LazyCollection;
-use robertogallea\EloquentApi\Reader\JsonApiReader;
+use robertogallea\EloquentApi\Utils\UrlNormalizer;
 
 class LaravelJsonApiReader implements JsonApiReader
 {
+    /**
+     * @var UrlNormalizer
+     */
+    private $urlNormalizer;
+    
+    /**
+     * @var JsonPageReader
+     */
+    private $pageReader;
+    
+    public function __construct(UrlNormalizer $urlNormalizer, JsonPageReader $pageReader)
+    {
+        $this->urlNormalizer = $urlNormalizer;
+        $this->pageReader = $pageReader;
+    }
     
     public function read(string $url, ?string $nextPageField = null, ?string $dataField = null): LazyCollection
     {
@@ -17,14 +31,14 @@ class LaravelJsonApiReader implements JsonApiReader
             function () use ($url, $nextPageField, $dataField) {
                 $count = 0;
                 
-                $urlData = parse_url($url);
-                
-                $baseUri = $urlData['scheme'] . '://' . $urlData['host'] . (isset($urlData['port']) ? ':' . $urlData['port'] : '') . ($urlData['path'] ?? '');
-                
-                $nextPage = $baseUri;
+                $nextPage = $this->urlNormalizer->normalize($url);
                 
                 while (!is_null($nextPage)) {
-                    [$data, $nextPage] = $this->getNextPage($nextPage, $nextPageField, $dataField);
+                    $page = $this->pageReader->read($nextPage, $nextPageField, $dataField);
+                    
+                    $data = $page->getData();
+                    $nextPage = $page->getNextPage();
+                    
                     $data = $this->offsetKeys($data, $count);
                     
                     $count += sizeof($data);
@@ -33,19 +47,6 @@ class LaravelJsonApiReader implements JsonApiReader
                 }
             }
         );
-    }
-    
-    private function getNextPage(string $url, ?string $nextPageField, ?string $dataField): array
-    {
-        // Retrieve tha data
-        $response = Http::get($url);
-        
-        $data = $response->json();
-        
-        $nextPage = $data[$nextPageField] ?? null;
-        $data = $dataField ? $data[$dataField] : $data;
-        
-        return [$data, $nextPage];
     }
     
     private function offsetKeys(array $data, int $count)
