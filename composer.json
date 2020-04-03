@@ -14,7 +14,7 @@
     "require": {
         "php": "^7.3",
         "illuminate/support": "^7.0",
-        "calebporzio/sushi": "^1.1",
+        "calebporzio/sushi": "^2.0",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^6.5"
     },
